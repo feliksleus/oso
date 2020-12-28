@@ -129,5 +129,21 @@ def test_allow_model(test_oso):
     assert test_oso.is_allowed(user, "list", Company)
 
 
+@pytest.mark.asyncio
+async def test_async(test_oso):
+    import asyncio
+
+    class AsyncTest:
+        async def async_fn(self):
+            await asyncio.sleep(0.1)
+            return 1
+
+    test_oso.register_class(AsyncTest)
+    test_oso.load_str(
+        'allow(_, _, "async_resource") if new AsyncTest().async_fn() = 1;'
+    )
+    assert await test_oso.is_allowed_async("", "", "async_resource")
+
+
 if __name__ == "__main__":
     pytest.main([__file__])
