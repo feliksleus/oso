@@ -1,0 +1,79 @@
+<aside class="w-full lg:w-1/5 lg:px-6 text-black leading-normal">
+    <div class="block lg:hidden sticky pin">
+        <button id="menu-toggle"
+            class="flex w-full justify-end px-3 py-3 bg-white lg:bg-transparent border rounded border-grey-dark hover:border-purple appearance-none focus:outline-none">
+            <svg class="fill-current h-3 float-right" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+            </svg>
+        </button>
+    </div>
+    <div class="w-full sticky pin hidden h-64 lg:h-auto overflow-x-hidden overflow-y-auto lg:overflow-y-hidden lg:block mt-0 bg-white shadow lg:shadow-none lg:bg-transparent z-20"
+        style="top:5em;" id="menu-content">
+        {{ .Site }}
+        {{ .Site.Menus }}
+        <ul>
+            {{ $currentNode := . }}
+            {{ range .Site.Menus.main }}
+            {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode}}
+            {{ end }}
+        </ul>
+    </div>
+</aside>
+
+
+
+<!-- templates -->
+{{ define "section-tree-nav" }}
+{{ $currentNode := .currentnode }}
+{{ $currentFileUniqueID := "" }}
+{{ with $currentNode.File }}{{ $currentFileUniqueID = .UniqueID }}{{ end }}
+{{with .sect}}
+{{if and .IsSection (or (not .Params.hidden) $.showhidden)}}
+{{safeHTML .Params.head}}
+<li data-nav-id="{{.RelPermalink}}" title="{{.Title}}" class="
+            {{if .IsAncestor $currentNode }}parent{{end}}
+            {{if eq .File.UniqueID $currentFileUniqueID}}active{{end}}
+            {{if .Params.alwaysopen}}parent{{end}}
+            ">
+    <a href="{{.RelPermalink}}">
+        {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
+    </a>
+    {{ $numberOfPages := (add (len .Pages) (len .Sections)) }}
+    {{ if ne $numberOfPages 0 }}
+    <ul>
+        {{ $currentNode.Scratch.Set "pages" .Pages }}
+        {{ if .Sections}}
+        {{ $currentNode.Scratch.Set "pages" (.Pages | union .Sections) }}
+        {{end}}
+        {{ $pages := ($currentNode.Scratch.Get "pages") }}
+
+        {{if eq .Site.Params.ordersectionsby "title"}}
+        {{ range $pages.ByTitle }}
+        {{ if and .Params.hidden (not $.showhidden) }}
+        {{else}}
+        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode }}
+        {{end}}
+        {{ end }}
+        {{else}}
+        {{ range $pages.ByWeight }}
+        {{ if and .Params.hidden (not $.showhidden) }}
+        {{else}}
+        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode }}
+        {{end}}
+        {{ end }}
+        {{end}}
+    </ul>
+    {{ end }}
+</li>
+{{else}}
+{{ if not .Params.Hidden }}
+<li data-nav-id="{{.RelPermalink}}" title="{{.Title}}"
+    class="dd-item {{if eq .File.UniqueID $currentFileUniqueID}}active{{end}}">
+    <a href="{{ .RelPermalink}}">
+        {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
+    </a>
+</li>
+{{ end }}
+{{end}}
+{{ end }}
+{{ end }}

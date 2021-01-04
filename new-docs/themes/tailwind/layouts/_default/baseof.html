@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang='{{ .Site.LanguageCode }}'>
+{{ partial "head.html" . }}
+
+<body class="flex flex-col min-h-screen">
+    {{- partial "dev-size-indicator.html" . -}}
+    {{- partial "header.html" . -}}
+    <div class="container w-full flex flex-wrap mx-auto px-2 pt-4 lg:pt-8">
+        {{- partial "menubar.html" . -}}
+        <main
+            class="w-full lg:w-4/5 p-8 mt-6 lg:mt-0 text-black leading-normal bg-white border border-grey-light border-rounded">
+            {{- block "main" . }}{{- end }}
+            <!--/ Post Content-->
+            {{- partial "useful.html" . -}}
+        </main>
+        <!--Back link -->
+        <div class="w-full lg:w-4/5 lg:ml-auto text-base md:text-sm text-grey px-4 py-6">
+            <span class="text-base text-purple font-bold">&lt;<span> <a href="#"
+                        class="text-base md:text-sm text-purple font-bold no-underline hover:underline">Back to Help</a>
+                    </p>
+        </div>
+    </div>
+    {{- partial "dev-parameters.html" . -}}
+    {{- partial "footer.html" . -}}
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+baseURL = "https://docs.osohq.com/"
+languageCode = "en-us"
+title = "oso Documentation"
+theme = "tailwind"
+
+sectionPagesMenu = "main"
