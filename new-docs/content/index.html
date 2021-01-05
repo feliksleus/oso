@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang='{{ .Site.LanguageCode }}'>
+{{ partial "head.html" . }}
+
+<body class="flex flex-col min-h-screen">
+    {{- partial "dev-size-indicator.html" . -}}
+    {{- partial "header.html" . -}}
+    <div class="container w-full flex flex-wrap mx-auto px-2 pt-4 lg:pt-8">
+        <main
+            class="w-full p-8 mt-6 lg:mt-0 text-black leading-normal bg-white border border-grey-light border-rounded">
+            <article class="prose lg:prose-xl">
+                <h1>oso Documentation</h1>
+
+                {{ range .Pages }}
+                <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h1>
+                    {{ end }}
+            </article>
+        </main>
+    </div>
+    {{- partial "dev-parameters.html" . -}}
+    {{- partial "footer.html" . -}}
+</body>
+
+</html>

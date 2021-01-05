@@ -8,9 +8,9 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
         themeDir + 'content/**/*.html',
         'layouts/**/*.html',
         'content/**/*.html',
-        'exampleSite/layouts/**/*.html',
-        'exampleSite/content/**/*.html',
     ],
+
+    whitelistPatternsChildren: [/prose$/],
 
     // This is the function used to extract class names from your templates
     defaultExtractor: content => {
@@ -24,11 +24,11 @@ const purgecss = require('@fullhuman/postcss-purgecss')({
     }
 })
 
-module.exports = {    
-    plugins: [        
+module.exports = {
+    plugins: [
         require('postcss-import')({
             path: [themeDir]
-            }), 
+        }),
         require('tailwindcss')(themeDir + 'assets/css/tailwind.config.js'),
         require('autoprefixer')({
             path: [themeDir]

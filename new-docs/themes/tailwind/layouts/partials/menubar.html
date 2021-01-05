@@ -1,4 +1,4 @@
-<aside class="w-full lg:w-1/5 lg:px-6 text-black leading-normal">
+<aside class="w-full lg:w-1/5  text-black leading-normal">
     <div class="block lg:hidden sticky pin">
         <button id="menu-toggle"
             class="flex w-full justify-end px-3 py-3 bg-white lg:bg-transparent border rounded border-grey-dark hover:border-purple appearance-none focus:outline-none">
@@ -7,33 +7,43 @@
             </svg>
         </button>
     </div>
+    <div class="flex-1 w-full mx-auto max-w-sm content-center py-4 lg:py-0 pr-4">
+        <div class="relative pull-right pr-2 pb-4 md:pr-0">
+            <input type="search" placeholder="Search"
+                class="w-full bg-grey-lightest text-sm text-grey-darkest transition border focus:outline-none focus:border-purple rounded py-1 px-2 pl-8 appearance-none leading-normal">
+            <div class="absolute search-icon" style="top: 0.5rem;left: 0.75rem;">
+                <svg class="fill-current pointer-events-none text-grey-darkest w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path
+                        d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z">
+                    </path>
+                </svg>
+            </div>
+        </div>
+    </div>
     <div class="w-full sticky pin hidden h-64 lg:h-auto overflow-x-hidden overflow-y-auto lg:overflow-y-hidden lg:block mt-0 bg-white shadow lg:shadow-none lg:bg-transparent z-20"
         style="top:5em;" id="menu-content">
-        {{ .Site }}
-        {{ .Site.Menus }}
-        <ul>
-            {{ $currentNode := . }}
-            {{ range .Site.Menus.main }}
-            {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode}}
-            {{ end }}
-        </ul>
+        {{ $currentNode := . }}
+        {{ $level := 0 }}
+        {{ range .Site.Home.Sections.ByWeight }}
+        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "level" $level }}
+        {{ end }}
     </div>
 </aside>
-
 
 
 <!-- templates -->
 {{ define "section-tree-nav" }}
 {{ $currentNode := .currentnode }}
 {{ $currentFileUniqueID := "" }}
+{{ $level := .level }}
 {{ with $currentNode.File }}{{ $currentFileUniqueID = .UniqueID }}{{ end }}
 {{with .sect}}
 {{if and .IsSection (or (not .Params.hidden) $.showhidden)}}
 {{safeHTML .Params.head}}
 <li data-nav-id="{{.RelPermalink}}" title="{{.Title}}" class="
-            {{if .IsAncestor $currentNode }}parent{{end}}
-            {{if eq .File.UniqueID $currentFileUniqueID}}active{{end}}
-            {{if .Params.alwaysopen}}parent{{end}}
+            {{if eq .File.UniqueID $currentFileUniqueID}}active text-blue{{end}}
+            font-bold pl-2
             ">
     <a href="{{.RelPermalink}}">
         {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
@@ -51,14 +61,14 @@
         {{ range $pages.ByTitle }}
         {{ if and .Params.hidden (not $.showhidden) }}
         {{else}}
-        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode }}
+        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "level" (add $level 1) }}
         {{end}}
         {{ end }}
         {{else}}
         {{ range $pages.ByWeight }}
         {{ if and .Params.hidden (not $.showhidden) }}
         {{else}}
-        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode }}
+        {{ template "section-tree-nav" dict "sect" . "currentnode" $currentNode "level" (add $level 1) }}
         {{end}}
         {{ end }}
         {{end}}
@@ -68,7 +78,7 @@
 {{else}}
 {{ if not .Params.Hidden }}
 <li data-nav-id="{{.RelPermalink}}" title="{{.Title}}"
-    class="dd-item {{if eq .File.UniqueID $currentFileUniqueID}}active{{end}}">
+    class="{{if eq .File.UniqueID $currentFileUniqueID}}active text-blue{{end}} text-base bg-white text-black font-normal pl-2">
     <a href="{{ .RelPermalink}}">
         {{safeHTML .Params.Pre}}{{or .Params.menuTitle .LinkTitle .Title}}{{safeHTML .Params.Post}}
     </a>

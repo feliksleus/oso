@@ -1,12 +1,5 @@
----
-title: "Home"
----
+oso docs home
 
-
-Welcome to the oso documentation site.
-
-Add authorization to your application in seconds.
-
-Pick your language below:
-
-Python -- Ruby -- ...
+{{ range .Pages }}
+<h3><a href="{{ .Permalink }}">{{ .Title }}</a></h1>
+{{ end }}

@@ -1,13 +1,9 @@
 {{ define "main" }}
-<p class="text-gray-400">
-    This is a list page
-</p>
-
-<article class="text-gray-700 sm:mx-12 mb-4">
-    <h1 class="font-bold text-3xl text-gray-700">{{ .Title }}</h1>
+<article class="prose lg:prose-xl">
+    <h1>{{ .Title }}</h1>
     {{ .Content }}
     {{ range .Pages }}
-    <h3 class="font-bold font-thin text-2xl text-blue-dark"><a href="{{ .Permalink }}">{{ .Title }}</a></h1>
+    <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h1>
         {{ end }}
 </article>
 {{ end }}
