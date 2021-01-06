@@ -61,8 +61,13 @@ fn simplify_trivial_constraint(this: Symbol, term: Term) -> Term {
     }
 }
 
-pub fn simplify_partial(var: &Symbol, term: Term, vm: &PolarVirtualMachine) -> Term {
-    let mut simplifier = Simplifier::new(var.clone(), vm);
+pub fn simplify_partial(
+    var: &Symbol,
+    term: Term,
+    vm: &PolarVirtualMachine,
+    bindings: Bindings,
+) -> Term {
+    let mut simplifier = Simplifier::new(var.clone(), vm, bindings);
     let simplified = simplifier.simplify_partial(term);
     let simplified = simplify_trivial_constraint(var.clone(), simplified);
     if matches!(simplified.value(), Value::Expression(e) if e.operator != Operator::And) {
@@ -80,7 +85,7 @@ pub fn simplify_partial(var: &Symbol, term: Term, vm: &PolarVirtualMachine) -> T
 pub fn simplify_bindings(bindings: Bindings, vm: &PolarVirtualMachine) -> Option<Bindings> {
     let mut unsatisfiable = false;
     let mut simplify = |var: Symbol, term: Term| {
-        let simplified = simplify_partial(&var, term, vm);
+        let simplified = simplify_partial(&var, term, vm, bindings.clone());
         let simplified = sub_this(var, simplified);
         match simplified.value().as_expression() {
             Ok(o) if o == &FALSE => unsatisfiable = true,
@@ -328,10 +333,10 @@ impl<'vm> Folder for Simplifier<'vm> {
 }
 
 impl<'vm> Simplifier<'vm> {
-    pub fn new(this_var: Symbol, vm: &'vm PolarVirtualMachine) -> Self {
+    pub fn new(this_var: Symbol, vm: &'vm PolarVirtualMachine, bindings: Bindings) -> Self {
         Self {
             this_var,
-            bindings: Bindings::new(),
+            bindings,
             vm,
         }
     }
@@ -342,8 +347,13 @@ impl<'vm> Simplifier<'vm> {
     }
 
     pub fn deref(&self, term: &Term) -> Term {
+        eprintln!("Derefing: {}", term.to_polar());
         match term.value() {
             Value::Variable(var) | Value::RestVariable(var) => {
+                eprintln!(
+                    "  Derefed to: {:?}",
+                    self.bindings.get(var).map(|x| x.to_polar())
+                );
                 self.bindings.get(var).unwrap_or(term).clone()
             }
             _ => term.clone(),

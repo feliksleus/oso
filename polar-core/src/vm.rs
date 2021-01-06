@@ -1082,7 +1082,7 @@ impl PolarVirtualMachine {
                     left: x,
                     right: right.clone(),
                 })?,
-                VariableState::Cycle(c) => self.isa_expr(&cycle_constraints(c), left, right)?,
+                VariableState::Cycle(c) => self.isa_expr(&op!(And), left, right)?,
                 VariableState::Partial(e) => self.isa_expr(&e, left, right)?,
             },
             (_, Value::Variable(r)) | (_, Value::RestVariable(r)) => match self.variable_state(r) {
@@ -1094,7 +1094,7 @@ impl PolarVirtualMachine {
                     left: left.clone(),
                     right: y,
                 })?,
-                VariableState::Cycle(d) => self.isa_expr(&cycle_constraints(d), left, right)?,
+                VariableState::Cycle(d) => self.isa_expr(&op!(And), left, right)?,
                 VariableState::Partial(f) => self.isa_expr(&f, left, right)?,
             },
 
@@ -1210,7 +1210,12 @@ impl PolarVirtualMachine {
                 // involving a particular variable.
 
                 let var = left.value().as_symbol()?;
-                let simplified = simplify_partial(var, operation.clone().into_term(), &self);
+                let simplified = simplify_partial(
+                    var,
+                    operation.clone().into_term(),
+                    &self,
+                    self.bindings(true),
+                );
                 let simplified = simplified.value().as_expression()?;
                 let lhs_of_matches = simplified
                     .constraints()
@@ -1829,7 +1834,7 @@ impl PolarVirtualMachine {
                     }
                     VariableState::Unbound => op!(And),
                     VariableState::Partial(expr) => expr,
-                    VariableState::Cycle(c) => cycle_constraints(c),
+                    VariableState::Cycle(c) => op!(And),
                 };
                 let dot_op =
                     object.clone_with_value(value!(op!(Dot, object.clone(), field.clone())));
@@ -1907,10 +1912,7 @@ impl PolarVirtualMachine {
                         self.constrain(&constraint)?;
                     }
                     (VariableState::Cycle(c), VariableState::Cycle(d)) => {
-                        let mut e = cycle_constraints(c);
-                        e.merge_constraints(cycle_constraints(d));
-                        let e = e.clone_with_new_constraint(term.clone());
-                        self.constrain(&e)?;
+                        self.constrain(&op!(And, term.clone()))?;
                     }
                     (VariableState::Unbound, VariableState::Partial(e))
                     | (VariableState::Partial(e), VariableState::Unbound) => {
@@ -1919,7 +1921,6 @@ impl PolarVirtualMachine {
                     }
                     (VariableState::Cycle(c), VariableState::Partial(mut e))
                     | (VariableState::Partial(mut e), VariableState::Cycle(c)) => {
-                        e.merge_constraints(cycle_constraints(c));
                         let e = e.clone_with_new_constraint(term.clone());
                         self.constrain(&e)?;
                     }
@@ -1931,8 +1932,7 @@ impl PolarVirtualMachine {
                 VariableState::Unbound => todo!(),
                 VariableState::Bound(_) => todo!(),
                 VariableState::Cycle(c) => {
-                    let e = cycle_constraints(c);
-                    self.constrain(&e.clone_with_new_constraint(term.clone()))?;
+                    self.constrain(&op!(And, term.clone()))?;
                 }
                 VariableState::Partial(e) => {
                     self.constrain(&e.clone_with_new_constraint(term.clone()))?;
@@ -2190,10 +2190,7 @@ impl PolarVirtualMachine {
                         );
                     }
                     (VariableState::Cycle(c), VariableState::Cycle(d)) => {
-                        let mut e = cycle_constraints(c);
-                        e.merge_constraints(cycle_constraints(d));
-                        let e = e.clone_with_new_constraint(term.clone());
-                        self.constrain(&e)?;
+                        self.constrain(&op!(And, term.clone()))?;
                     }
                     (s, t) => todo!("({:?}, {:?}]", s, t),
                 }
@@ -2207,9 +2204,7 @@ impl PolarVirtualMachine {
                         return self.comparison_op_helper(term, op, vec![x, right]);
                     }
                     VariableState::Cycle(c) => {
-                        let e = cycle_constraints(c);
-                        let e = e.clone_with_new_constraint(term.clone());
-                        self.constrain(&e)?;
+                        self.constrain(&op!(And, term.clone()))?;
                     }
                     VariableState::Partial(e) => {
                         self.constrain(&e.clone_with_new_constraint(term.clone()))?;
@@ -2225,9 +2220,7 @@ impl PolarVirtualMachine {
                         return self.comparison_op_helper(term, op, vec![left, y]);
                     }
                     VariableState::Cycle(d) => {
-                        let e = cycle_constraints(d);
-                        let e = e.clone_with_new_constraint(term.clone());
-                        self.constrain(&e)?;
+                        self.constrain(&op!(And, term.clone()))?;
                     }
                     VariableState::Partial(f) => {
                         self.constrain(&f.clone_with_new_constraint(term.clone()))?;
@@ -2531,14 +2524,14 @@ impl PolarVirtualMachine {
             }
             (VariableState::Partial(mut e), VariableState::Cycle(c)) => {
                 // Bind the entire cycle to the expression.
-                e.merge_constraints(cycle_constraints(c));
+                // e.merge_constraints(cycle_constraints(c));
                 let e = e
                     .clone_with_new_constraint(op!(Unify, left.clone(), right.clone()).into_term());
                 self.constrain(&e)?;
             }
             (VariableState::Cycle(c), VariableState::Partial(mut f)) => {
                 // Bind the entire cycle to the expression.
-                f.merge_constraints(cycle_constraints(c));
+                // f.merge_constraints(cycle_constraints(c));
                 let f = f
                     .clone_with_new_constraint(op!(Unify, left.clone(), right.clone()).into_term());
                 self.constrain(&f)?;

@@ -88,19 +88,93 @@ impl Folder for PartialInverter {
     }
 }
 
+fn watermelon(bindings: &BindingStack, var: &Symbol) -> Operation {
+    fn banana(bindings: &BindingStack, var: &Symbol) -> Term {
+        bindings
+            .iter()
+            .rev()
+            .find(|Binding(v, _)| var == v)
+            .map(|Binding(_, value)| value)
+            .unwrap()
+            .clone()
+    }
+
+    match banana(bindings, var).value() {
+        Value::Variable(v) | Value::RestVariable(v) => watermelon(bindings, v),
+        Value::Expression(e) => e.clone(),
+        _ => unreachable!(),
+    }
+}
+
 /// Invert partial values in `bindings` with respect to the old VM bindings.
 fn invert_partials(bindings: BindingStack, vm: &PolarVirtualMachine) -> BindingStack {
     let mut new_bindings = Vec::new();
-    for Binding(var, value) in bindings {
+    for Binding(var, value) in bindings.clone() {
         match vm.variable_state(&var) {
-            VariableState::Unbound => (),
+            VariableState::Unbound => {
+                eprintln!("UNBOUND\n  {}", var);
+                let e = watermelon(&bindings, &var);
+                eprintln!("  ~~~~~~~~~ {}", e.to_polar());
+                for var in e.variables() {
+                    new_bindings.push(Binding(var, e.clone().into_term()));
+                }
+
+                // match value.value() {
+                //     Value::Variable(v) | Value::RestVariable(v) => {
+                //         let value = bindings
+                //             .iter()
+                //             .rev()
+                //             .find(|Binding(var, _)| var == v)
+                //             .map(|Binding(_, value)| value)
+                //             .unwrap()
+                //             .clone();
+                //     }
+                //     Value::Expression(e) =>
+                //     x => panic!("$$$$$$$$$$ {}", x.to_polar()),
+                // }
+
+                // let mut value = value.clone();
+                // loop {
+                //     match value.value() {
+                //         Value::Expression(e) => {
+                //             for var in e.variables() {
+                //                 new_bindings.push(Binding(var, value.clone()));
+                //             }
+                //             break;
+                //         }
+                //         Value::Variable(v) | Value::RestVariable(v) => {
+                //             value = bindings
+                //                 .iter()
+                //                 .rev()
+                //                 .find(|Binding(var, _)| var == v)
+                //                 .map(|Binding(_, value)| value)
+                //                 .unwrap()
+                //                 .clone();
+                //         }
+                //         _ => break,
+                //     }
+                // }
+            }
             VariableState::Bound(x) => {
                 todo!("{} is bound to {} in VM, now {}", var, x, value.to_polar())
             }
             VariableState::Cycle(c) => {
+                eprintln!("CYCLING\n  {} => {:?}", var, c);
+                eprintln!("  value: {}", value.to_polar());
+                if let Value::Variable(x) = value.value() {
+                    let asdf = bindings.clone();
+                    eprintln!(
+                        "  bound to: {:?}",
+                        asdf.iter()
+                            .rev()
+                            .find(|Binding(var, _)| var == x)
+                            .map(|Binding(_, value)| value.to_polar())
+                    );
+                }
                 let constraints =
                     PartialInverter::new(var.clone(), VariableState::Cycle(c.clone()))
                         .fold_term(value);
+                eprintln!("  constraints: {}", constraints.to_polar());
                 match constraints.value() {
                     Value::Expression(e) => {
                         let mut e = e.clone();
