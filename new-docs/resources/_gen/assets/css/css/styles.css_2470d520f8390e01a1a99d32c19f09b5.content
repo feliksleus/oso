@@ -1817,6 +1817,59 @@ video {
   margin-bottom: 0;
 }
 
+.inline-svg {
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  width: 1.25rem
+}
+
+.nav-btn:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(57, 35, 150, var(--tw-bg-opacity));
+}
+
+.nav-btn {
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  --tw-text-opacity: 1;
+  color: rgba(229, 231, 235, var(--tw-text-opacity));
+}
+
+.nav-btn:hover {
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+}
+
+.tooltip .tooltip-text {
+  --tw-bg-opacity: 1;
+  background-color: rgba(55, 65, 81, var(--tw-bg-opacity));
+  border-radius: 0.5rem;
+  display: inline-block;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  margin-top: 4rem;
+  padding: 0.5rem;
+  position: absolute;
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+  visibility: hidden;
+  z-index: 50
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  transition-delay: 500ms
+}
+
 /* Site Specific */
 
 .starter {
@@ -20773,14 +20826,6 @@ video {
 .animate-bounce {
   -webkit-animation: bounce 1s infinite;
           animation: bounce 1s infinite;
-}
-
-.inline-svg {
-  display: inline-block;
-  height: 1.15rem;
-  width: 1.15rem;
-  top: 0.15rem;
-  position: relative;
 }
 
 @media (min-width: 640px) {

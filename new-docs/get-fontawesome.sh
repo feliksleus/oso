@@ -1,12 +1,24 @@
 #!/bin/sh
 set -ex
-icons="twitter github slack"
+brand_icons="twitter github slack"
 
 dest=fontawesome
 url=https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/brands
 
 mkdir -p "${dest}"
-for icon in $icons; do
+for icon in $brand_icons; do
   icon="${icon}.svg"
   wget -O "${dest}/${icon}" "${url}/${icon}"
 done
+
+solid_icons="blog download"
+
+dest=fontawesome
+url=https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs/solid
+
+mkdir -p "${dest}"
+for icon in $solid_icons; do
+  icon="${icon}.svg"
+  wget -O "${dest}/${icon}" "${url}/${icon}"
+done
+

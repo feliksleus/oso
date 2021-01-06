@@ -7,10 +7,31 @@
 /* Tailwind's utility classes - generated based on config file */
 @import "node_modules/tailwindcss/utilities";
 
-.inline-svg {
-    display: inline-block;
-    height: 1.15rem;
-    width: 1.15rem;
-    top: 0.15rem;
-    position: relative;
+
+@layer components {
+    .inline-svg {
+        @apply h-5 w-5 mr-2
+    }
+
+    .nav-btn {
+        @apply
+            px-3 py-3
+            rounded-md
+            flex items-center
+            text-gray-200 text-base font-semibold
+            hover:bg-blue hover:text-white
+    }
+
+    .tooltip .tooltip-text {
+        @apply 
+            invisible
+            p-2 mt-16
+            absolute z-50 inline-block
+            text-xs rounded-lg bg-gray-700 text-white font-medium
+    }
+
+    .tooltip:hover .tooltip-text {
+        @apply visible delay-500
+    }
+
 }

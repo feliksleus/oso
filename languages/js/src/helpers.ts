@@ -1,5 +1,8 @@
 import { inspect } from 'util';
-import { readFile as _readFile } from 'fs';
+
+const _readFile: Function | null = typeof window === 'object'
+  ? null
+  : eval('require("fs")._readFile');
 
 import {
   InvalidQueryEventError,
@@ -268,7 +271,7 @@ function parseDebug({ message }: obj): QueryEvent {
  */
 export function readFile(file: string): Promise<string> {
   return new Promise((res, rej) =>
-    _readFile(file, { encoding: 'utf8' }, (err, contents) =>
+    _readFile!(file, { encoding: 'utf8' }, (err: string, contents: string) =>
       err === null ? res(contents) : rej(err)
     )
   );
@@ -278,16 +281,17 @@ export function readFile(file: string): Promise<string> {
 let RESET = '';
 let FG_BLUE = '';
 let FG_RED = '';
-if (
-  typeof process.stdout.getColorDepth === 'function' &&
-  process.stdout.getColorDepth() >= 4 &&
-  typeof process.stderr.getColorDepth === 'function' &&
-  process.stderr.getColorDepth() >= 4
-) {
-  RESET = '\x1b[0m';
-  FG_BLUE = '\x1b[34m';
-  FG_RED = '\x1b[31m';
-}
+// if (
+//   typeof process === 'object' &&
+//   typeof process.stdout.getColorDepth === 'function' &&
+//   process.stdout.getColorDepth() >= 4 &&
+//   typeof process.stderr.getColorDepth === 'function' &&
+//   process.stderr.getColorDepth() >= 4
+// ) {
+//   RESET = '\x1b[0m';
+//   FG_BLUE = '\x1b[34m';
+//   FG_RED = '\x1b[31m';
+// }
 /** @internal */
 export const PROMPT = FG_BLUE + 'query> ' + RESET;
 

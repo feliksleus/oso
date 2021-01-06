@@ -1,9 +1,14 @@
-import { extname } from 'path';
-import { createInterface } from 'readline';
+const extname: Function | null = typeof window === 'object'
+  ? null
+  : eval('require("path").extname');
+const createInterface: Function | null = typeof window === 'object'
+  ? null
+  : eval('require("readline").createInterface');
 
 import {
   InlineQueryFailedError,
   InvalidConstructorError,
+  PolarError,
   PolarFileExtensionError,
   PolarFileNotFoundError,
 } from './errors';
@@ -83,6 +88,9 @@ export class Polar {
    * Load a Polar policy file.
    */
   async loadFile(file: string): Promise<void> {
+    if (!extname) {
+      throw new PolarError("loadFile is not supported in the browser");
+    }
     if (extname(file) !== '.polar') throw new PolarFileExtensionError(file);
     let contents;
     try {
@@ -154,42 +162,45 @@ export class Polar {
   }
 
   /** Start a REPL session. */
-  async repl(files?: string[]): Promise<void> {
-    try {
-      if (files?.length) await Promise.all(files.map(f => this.loadFile(f)));
-    } catch (e) {
-      printError(e);
-    }
+  // async repl(files?: string[]): Promise<void> {
+  //   if (createInterface == null) {
+  //     throw new PolarError("REPL is not supported in the browser");
+  //   }
+  //   try {
+  //     if (files?.length) await Promise.all(files.map(f => this.loadFile(f)));
+  //   } catch (e) {
+  //     printError(e);
+  //   }
 
-    // @ts-ignore
-    const repl = global.repl?.repl;
 
-    if (repl) {
-      repl.setPrompt(PROMPT);
-      const evalQuery = this.evalReplInput.bind(this);
-      repl.eval = async (cmd: string, _ctx: any, _file: string, cb: Function) =>
-        cb(null, await evalQuery(cmd));
-      const listeners: Function[] = repl.listeners('exit');
-      repl.removeAllListeners('exit');
-      repl.prependOnceListener('exit', () => {
-        listeners.forEach(l => repl.addListener('exit', l));
-        require('repl').start({ useGlobal: true });
-      });
-    } else {
-      const rl = createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: PROMPT,
-        tabSize: 4,
-      });
-      rl.prompt();
-      rl.on('line', async line => {
-        const result = await this.evalReplInput(line);
-        if (result !== undefined) console.log(result);
-        rl.prompt();
-      });
-    }
-  }
+  //   const repl = global["repl"].repl;
+
+  //   if (repl) {
+  //     repl.setPrompt(PROMPT);
+  //     const evalQuery = this.evalReplInput.bind(this);
+  //     repl.eval = async (cmd: string, _ctx: any, _file: string, cb: Function) =>
+  //       cb(null, await evalQuery(cmd));
+  //     const listeners: Function[] = repl.listeners('exit');
+  //     repl.removeAllListeners('exit');
+  //     repl.prependOnceListener('exit', () => {
+  //       listeners.forEach(l => repl.addListener('exit', l));
+  //       require('repl').start({ useGlobal: true });
+  //     });
+  //   } else {
+  //     const rl = createInterface({
+  //       input: process.stdin,
+  //       output: process.stdout,
+  //       prompt: PROMPT,
+  //       tabSize: 4,
+  //     });
+  //     rl.prompt();
+  //     rl.on('line', async (line: string) => {
+  //       const result = await this.evalReplInput(line);
+  //       if (result !== undefined) console.log(result);
+  //       rl.prompt();
+  //     });
+  //   }
+  // }
 
   /**
    * Evaluate REPL input.

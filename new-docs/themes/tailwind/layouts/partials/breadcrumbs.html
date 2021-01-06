@@ -1,17 +1,21 @@
-<ol class="flex text-white">
-    {{ template "breadcrumbnav" (dict "p1" . "p2" .) }}
-</ol>
-{{ define "breadcrumbnav" }}
-{{ if .p1.Parent }}
-{{ template "breadcrumbnav" (dict "p1" .p1.Parent "p2" .p2 ) }}
-{{ else if not .p1.IsHome }}
-{{ template "breadcrumbnav" (dict "p1" .p1.Site.Home "p2" .p2 ) }}
-{{ end }}
-<li class={{ if eq .p1 .p2 }} "text-white underline" {{else}} "text-white" {{ end }}>
-    <a href="{{ .p1.Permalink }}">{{ .p1.Title }}</a>
-</li>
-{{ if ne .p1 .p2 }}
-<li><span class="mx-2"> / </span></li>
-{{ end }}
+<nav id="breadcrumbs" class="w-full z-40 bg-blue px-10 pt-20 pb-2 mt-1 font-semibold">
 
-{{ end }}
+    <ol class="flex text-white">
+        {{ template "breadcrumbnav" (dict "p1" . "p2" .) }}
+    </ol>
+    {{ define "breadcrumbnav" }}
+    {{ if .p1.Parent }}
+    {{ template "breadcrumbnav" (dict "p1" .p1.Parent "p2" .p2 ) }}
+    {{ else if not .p1.IsHome }}
+    {{ template "breadcrumbnav" (dict "p1" .p1.Site.Home "p2" .p2 ) }}
+    {{ end }}
+    <li class={{ if eq .p1 .p2 }} "text-white underline" {{else}} "text-white" {{ end }}>
+        <a href="{{ .p1.Permalink }}">{{ .p1.Title }}</a>
+    </li>
+    {{ if ne .p1 .p2 }}
+    <li><span class="mx-2"> / </span></li>
+    {{ end }}
+
+    {{ end }}
+
+</nav>

@@ -1,21 +1,37 @@
 <header>
     <nav id="header" class="fixed w-full z-10 pin-t bg-blue-dark">
         <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-4">
-            <div class="pl-4 flex items-center">
-                <svg class="h-5 pr-3 fill-current text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path
-                        d="M0 2C0 .9.9 0 2 0h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm14 12h4V2H2v12h4c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2zM5 9l2-2 2 2 4-4 2 2-6 6-4-4z" />
-                </svg>
+            <div class="flex items-center">
                 <a class="text-white text-base no-underline hover:no-underline font-extrabold text-xl" href="#">
-                    oso
+                    <img src="/oso_logo.png" class="h-12">
                 </a>
+                <h1 class="text-white font-bold text-3xl px-6">
+                    {{ .Name }}
+                </h1>
             </div>
             <div class="block lg:hidden pr-4">
+                <!-- Mobile menu button -->
                 <button id="nav-toggle"
-                    class="flex items-center px-3 py-2 border rounded text-grey border-grey-dark hover:text-black hover:border-purple appearance-none focus:outline-none">
-                    <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <title>Menu</title>
-                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-white hover:bg-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                    <span class="sr-only">Open main menu</span>
+                    <!--Heroicon name: menu
+
+                    Menu open: "hidden", Menu closed: "block"
+                    -->
+                    <svg id="nav-toggle-closed" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <!--
+                    Heroicon name: x
+
+                    Menu open: "block", Menu closed: "hidden"
+                    -->
+                    <svg id="nav-toggle-open" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -26,25 +42,47 @@
                 </div>
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
-                        <a href="https://join-slack.osohq.com/"
-                            class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            {{ partial "fontawesome.html" "slack" }}
-                            <span class="button-text">Slack</span>
+                        <a href="https://join-slack.osohq.com/">
+                            <button class="nav-btn tooltip">
+                                <span class="tooltip-text" aria-hidden="true"> Join our
+                                    community on Slack </span>
+                                {{ partial "fontawesome.html" "slack" }}
+                                Slack
+                            </button>
                         </a>
-                        <a href="#"
-                            class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Team</a>
-                        <a href="#"
-                            class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Projects</a>
-                        <a href="#"
-                            class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Calendar</a>
+                        <a href="https://github.com/osohq/oso">
+                            <button class="nav-btn tooltip">
+                                <span class="tooltip-text" aria-hidden="true">Browse the code on GitHub </span>
+                                {{ partial "fontawesome.html" "github" }}
+                                GitHub
+                            </button>
+                        </a>
+                        <a href="https://www.osohq.com/company/blog/">
+                            <button class="nav-btn tooltip">
+                                <span class="tooltip-text" aria-hidden="true">Read the latest from the engineering
+                                    team</span>
+                                {{ partial "fontawesome.html" "blog" }}
+                                Blog
+                            </button>
+                        </a>
+                        <a href="/download">
+                            <button class="nav-btn bg-yellow text-blue-dark tooltip">
+                                <span class="tooltip-text" aria-hidden="true">Get the latest releases of oso</span>
+                                {{ partial "fontawesome.html" "download" }}
+                                Download
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </nav>
-    <nav id="breadcrumbs" class="w-full z-40 bg-blue px-2 pt-20 pb-2">
-        {{- partial "breadcrumbs.html" . -}}
+    {{ if .IsHome }}
+    <div class="pt-20"></div>
+    {{ else }}
+    {{- partial "breadcrumbs.html" . -}}
     </nav>
+    {{ end }}
 </header>
 <!-- 
 <div class="md-flex__cell md-flex__cell--shrink">

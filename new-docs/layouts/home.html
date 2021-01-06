@@ -1,0 +1,37 @@
+{{ define "main" }}
+<main class="w-full p-8 mt-6 lg:mt-0 text-black leading-normal bg-white border border-gray-light border-rounded">
+    <article class="prose lg:prose-xl">
+
+        Try it out!
+
+        <h3>JS code</h3>
+
+        <pre contenteditable="true" id="tryitinjs">
+exports.actor = "sam";
+exports.resource = {owner: "sam"};
+                </pre>
+
+
+        <h3>oso Policy</h3>
+
+        <pre contenteditable="true" id="tryitin">
+allow(actor, _action, resource) if
+    actor = resource.owner;
+                </pre>
+
+        <button id="tryitbutton"
+            class="flex items-center px-3 py-2 border rounded text-grey bg-blue text-white border-grey-dark hover:text-black hover:bg-yellow appearance-none focus:outline-none">
+            Run
+        </button>
+        <br>
+        Output:
+        <p id="tryitout"></p>
+
+        <h2>Read more:</h2>
+        {{ range .Pages }}
+        <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h1>
+            {{ end }}
+    </article>
+</main>
+
+{{ end -}}
