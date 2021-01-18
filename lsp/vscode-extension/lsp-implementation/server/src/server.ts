@@ -132,6 +132,7 @@ documents.onDidClose(e => {
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
+	connection.console.log("!");
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
@@ -142,9 +143,14 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	let text = textDocument.getText();
 	//let pattern = /\b[A-Z]{2,}\b/g;
 	//let m: RegExpExecArray | null;
+	//if (text.search("sample") != -1) {
+	connection.console.log("Found!");
+
+	//}
 	let sample = 0;
 	sample += 1;
 	//let problems = 0;
+	let a = 1;
 	let diagnostics: Diagnostic[] = [];
 	/*
 	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
