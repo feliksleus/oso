@@ -20,7 +20,7 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-
+const oso = require("../../node_modules/oso");
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 let connection = createConnection(ProposedFeatures.all);
@@ -132,11 +132,14 @@ documents.onDidClose(e => {
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
-	connection.console.log("!");
+	//console.log("!");
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
+	try {
+
+	
 	let settings = await getDocumentSettings(textDocument.uri);
 
 	// The validator creates diagnostics for all uppercase words length 2 and more
@@ -144,14 +147,25 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	//let pattern = /\b[A-Z]{2,}\b/g;
 	//let m: RegExpExecArray | null;
 	//if (text.search("sample") != -1) {
-	connection.console.log("Found!");
+	console.log(text);
 
 	//}
-	let sample = 0;
-	sample += 1;
+	//let sample = 0;
+	//sample += 1;
 	//let problems = 0;
-	let a = 1;
+	//let a = 1;
 	let diagnostics: Diagnostic[] = [];
+	
+	oso.loadStr(text)
+	   .then(() => 
+	   			{
+					console.log("Check")
+				})
+		.catch(() => 
+				{
+					console.log("There is an error here")
+				});
+
 	/*
 	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
 		problems++;
@@ -187,6 +201,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+	}
+
+	catch (e) 
+	{
+		console.log("Failed to retrieve the document: " + e);
+	}
 }
 
 connection.onDidChangeWatchedFiles(_change => {
