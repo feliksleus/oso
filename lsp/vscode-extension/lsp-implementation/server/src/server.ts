@@ -20,7 +20,9 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-const oso = require("../../node_modules/oso");
+import { Oso } from "oso"
+//const oso = require("../../node_modules/oso");
+const oso = new Oso();
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 let connection = createConnection(ProposedFeatures.all);
