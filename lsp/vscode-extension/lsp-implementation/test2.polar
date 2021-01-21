@@ -11,6 +11,7 @@ submitted(user, expense) if
 
 new_fact(fact);
 
+
 new_env(fact_1, fact_2);
 new_fact(new_f);
 test_this(polar_param);
