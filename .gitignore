@@ -8,7 +8,6 @@ tmp/
 .eggs
 
 .mypy_cache
-.vscode
 target
 languages/python/build
 languages/python/polar.egg-info

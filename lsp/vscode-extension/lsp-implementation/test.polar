@@ -10,9 +10,5 @@ submitted(user, expense) if
     user.email = expense.submitted_by;
 
 new_fact(fact);
-
 new_env(fact_2);
 new_fact(new_f);
-test_this(polar_param);
-new_fact_2(p);
-sample(par);

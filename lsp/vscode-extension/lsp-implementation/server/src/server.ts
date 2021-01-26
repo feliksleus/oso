@@ -14,7 +14,8 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	DidChangeWorkspaceFoldersNotification
 } from 'vscode-languageserver';
 
 import {
@@ -163,9 +164,21 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	   			{
 					console.log("Check")
 				})
-		.catch(() => 
+		.catch(e => 
 				{
-					console.log("There is an error here")
+					console.log("Error: " + e);
+					let diagnostic: Diagnostic = {
+						severity: DiagnosticSeverity.Error,
+						range: {
+							start: textDocument.positionAt(0),
+							end: textDocument.positionAt(text.length)
+						},
+						message: `${e}`,
+						source: ``
+					}
+
+					diagnostics.push(diagnostic);
+					
 				});
 
 	/*
